@@ -20,13 +20,17 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class EnchancementUtil {
 	public static final Object2IntMap<PlayerEntity> PACKET_IMMUNITIES = new Object2IntOpenHashMap<>();
@@ -74,6 +78,12 @@ public class EnchancementUtil {
 
 	public static boolean shouldBeUnbreakable(ItemStack stack) {
 		int flag = Enchancement.getConfig().unbreakingChangesFlag;
+		// Disable Create Glue Thing
+		Item superGlue = Registry.ITEM.get(Identifier.tryParse("create:super_glue"));
+		if (stack.getItem() == superGlue) {
+			stack.setDamage(0);
+			return false;
+		}
 		if (flag >= 0 && !stack.isIn(ModTags.Items.RETAINS_DURABILITY)) {
 			if (flag == 0) {
 				return !stack.isEmpty() && stack.getMaxDamage() > 0;
